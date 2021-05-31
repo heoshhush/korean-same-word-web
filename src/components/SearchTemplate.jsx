@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { getWord, searchKorean } from '../service/TranslateAPI';
+import SearchResult from './SearchResult';
 
 const SearchTemplate = (props) => {
     const [inputValue, setInputValue] = useState('');
     const [storedData, setStoredData] = useState([]);
     const [showingData, setShowingData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [data, setData] = useState({});
 
     const storeData = ( text ) => {
             let items = [...new Set([...storedData, text])]
@@ -118,7 +120,8 @@ const SearchTemplate = (props) => {
                                     searchResultObj: newTempObj,
                                     sameWordResultObj: resultTempObj,
                                 }
-                                console.log(searchResult)
+                                setData(searchResult);
+            
                             }
                         }
                         
@@ -142,18 +145,36 @@ const SearchTemplate = (props) => {
 
     return (
         <Container>
-            <Input value={inputValue} placeholder='검색어를 입력하세요'  onChange={onChangeInput}>
-            </Input>
-            <Button onClick={() => onPressSearch(inputValue)}>
+            <SearchContainer>
+                <Input value={inputValue} placeholder='검색어를 입력하세요'  onChange={onChangeInput}>
+                </Input>
+                <Button onClick={() => onPressSearch(inputValue)}>
+                검색하기
+                </Button>
+            </SearchContainer>
 
-            </Button>
+            {data.itemName && <SearchResult 
+                query ={data.query}
+                searchResultObj ={data.searchResultObj}
+                sameWordResultObj ={data.sameWordResultObj}
+                itemName ={data.itemName}
+            />}
         </Container>
     )
 }
 const Container = styled.div`
     display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:5em;
+    width:80vw;
+`;
+const SearchContainer = styled.div`
+    display:flex;
     flex-direction:row;
     align-items:center;
+    margin-bottom: 5em;
 `;
 const Input = styled.input`
     height:1.5em;
@@ -166,8 +187,6 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-    width: 2em;
-    height: 2em;
     margin-top:-2em;
     padding:0.5em;
 `;
